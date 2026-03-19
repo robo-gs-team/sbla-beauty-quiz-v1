@@ -989,6 +989,16 @@ img { max-width: 100%; display: block; }
     padding: 28px 48px 48px;
   }
 
+  /* Quiz app: allow content taller than viewport to scroll via #quiz-right */
+  #quiz-app { overflow: visible; }
+
+  /* Cap B&A images on desktop — prevents them pushing trust-band off screen */
+  .ba-combined { height: 280px; overflow: hidden; }
+  .ba-combined img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+  .ba-split { height: 280px; }
+  .ba-slot { height: 280px; overflow: hidden; }
+  .ba-slot img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+
 }
 </style>
 </head>
@@ -1639,15 +1649,13 @@ function selectQ1(el) {
     state.scores.neck = 20;
     state.scores.lip = 20;
     state.hardBundleTrigger = true;
+    // Skip Q2 — asking a secondary zone is pointless when user wants everything
+    setTimeout(() => { buildQ3(); navigateTo('q3'); }, 300);
   } else {
     state.scores[val] = 50;
     state.hardBundleTrigger = false;
+    setTimeout(() => { buildQ2(); navigateTo('q2'); }, 300);
   }
-
-  setTimeout(() => {
-    buildQ2();
-    navigateTo('q2');
-  }, 300);
 }
 
 // ── Q2 — Secondary Concern (+25) ──
@@ -1697,6 +1705,19 @@ function buildQ3() {
   const headline = document.getElementById('q3-headline');
   const container = document.getElementById('q3-options');
   container.innerHTML = '';
+
+  // If Q2 was skipped (q1='all'), adjust progress bar to reflect 5 remaining questions
+  if (state.q1 === 'all') {
+    const fill  = document.querySelector('[data-screen="q3"] .progress-bar-fill');
+    const count = document.querySelector('[data-screen="q3"] .progress-count');
+    if (fill)  fill.style.width = '40%';
+    if (count) count.textContent = '2 / 5';
+  } else {
+    const fill  = document.querySelector('[data-screen="q3"] .progress-bar-fill');
+    const count = document.querySelector('[data-screen="q3"] .progress-count');
+    if (fill)  fill.style.width = '50%';
+    if (count) count.textContent = '3 / 6';
+  }
 
   const isNeckRouted = state.q1 === 'neck' || state.q2 === 'neck';
 
@@ -2052,7 +2073,8 @@ function renderResult(resultState) {
     4: { type: 'split',    timeline: 'After 6 weeks',
          before: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Avis_W_-_Age_50_Before_sbla-ba-neck-standard_V2.jpg?v=1773949585',
          after:  'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Avis_W_-_Age_50_After_sbla-ba-neck-standard_V2.jpg?v=1773949585' },
-    5: { type: 'none',     timeline: 'Immediate results' },
+    5: { type: 'combined', timeline: 'After 4 weeks',
+         src: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/sbla-ba-facelift_jpg.jpg?v=1773949596' },
     6: { type: 'split',    timeline: 'In as little as 14 days',
          before: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Gretchen_45_Before_sbla-ba-neck-bundle_jpg.jpg?v=1773949584',
          after:  'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Gretchen_45_After_sbla-ba-neck-bundle_jpg.jpg?v=1773949584' },
