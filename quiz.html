@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBLA Beauty Quiz — Skin Solution Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SBLA QUIZ — DESIGN SYSTEM TOKENS
+   ============================================================ */
+:root {
+  --purple:      #3E0656;
+  --purple-warm: #4A0A63;
+  --purple-mid:  #552675;
+  --lilac:       #C39ADB;
+  --rose:        #E6C9DB;
+  --charcoal:    #434244;
+  --dk-charcoal: #3C393B;
+  --off-white:   #F3F1F1;
+  --lt-gray:     #EEEFF1;
+  --warm-gray:   #DAD7D5;
+  --blush:       #E7DEDD;
+  --white:       #FFFFFF;
+
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-ui:      'Inter', -apple-system, sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-ui);
+  color: var(--charcoal);
+  background: var(--off-white);
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+img { max-width: 100%; display: block; }
+
+/* ============================================================
+   QUIZ SHELL
+   ============================================================ */
+#quiz-app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  position: relative;
+  overflow: hidden;
+  background: var(--off-white);
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  min-height: auto;
+  width: 100%;
+}
+.screen.active {
+  display: flex;
+}
+.entry-screen,
+.analyzing-screen {
+  min-height: 100dvh;
+}
+
+/* ============================================================
+   SCREEN 0 — ENTRY
+   ============================================================ */
+.entry-screen {
+  background: var(--purple);
+  color: var(--white);
+}
+
+.entry-hero {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #5B0B8C 0%, #3E0656 50%, #2C0B41 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.entry-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+}
+.entry-hero-placeholder {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.entry-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px 28px;
+}
+
+.entry-eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lilac);
+  margin-bottom: 18px;
+}
+
+.entry-headline {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.25;
+  color: var(--white);
+  margin-bottom: 14px;
+}
+.entry-headline em {
+  font-style: italic;
+}
+
+.entry-sub {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 28px;
+  max-width: 380px;
+}
+
+.entry-meta {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0;
+  padding-bottom: 32px;
+}
+.entry-meta-tag {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 8px 16px;
+  border-radius: 0;
+}
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 18px 24px;
+  background: var(--white);
+  color: var(--purple);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  border: none;
+  border-radius: 0;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-primary:hover {
+  background: var(--lilac);
+  color: var(--purple);
+}
+
+.btn-primary--purple {
+  background: var(--purple);
+  color: var(--white);
+}
+.btn-primary--purple:hover {
+  background: var(--purple-warm);
+}
+
+/* ============================================================
+   QUESTION SCREENS
+   ============================================================ */
+.q-header {
+  background: var(--purple-warm);
+  padding: 20px 24px 24px;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.progress-bar-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 0;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--lilac);
+  transition: width 0.4s ease;
+  border-radius: 0;
+}
+.progress-count {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--lilac);
+  white-space: nowrap;
+}
+
+.q-headline {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--white);
+}
+.q-sub {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.q-body {
+  flex: 1;
+  background: var(--off-white);
+  padding: 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Zone cards (Q1) --- */
+.zone-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.zone-card {
+  background: var(--white);
+  border: 1.5px solid var(--warm-gray);
+  border-radius: 0;
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+.zone-card:hover {
+  border-color: var(--purple-mid);
+}
+.zone-card.selected {
+  border-color: var(--purple);
+  border-width: 2px;
+  box-shadow: 0 0 0 1px var(--purple);
+}
+
+.zone-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zone-icon svg {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: var(--purple-mid);
+  stroke-width: 1.2;
+}
+
+.zone-name {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dk-charcoal);
+}
+.zone-desc {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--charcoal);
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
+/* --- Full-width option (Q1 "All of it") --- */
+.option-full {
+  background: var(--white);
+  border: 1.5px solid var(--warm-gray);
+  border-radius: 0;
+  padding: 16px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.15s;
+}
+.option-full:hover { border-color: var(--purple-mid); }
+.option-full.selected {
+  border-color: var(--purple);
+  border-width: 2px;
+  box-shadow: 0 0 0 1px var(--purple);
+}
+
+.option-radio {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--warm-gray);
+  border-radius: 0;
+  flex-shrink: 0;
+  position: relative;
+}
+.selected .option-radio {
+  border-color: var(--purple);
+}
+.selected .option-radio::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 8px; height: 8px;
+  background: var(--purple);
+  border-radius: 0;
+}
+
+.option-text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--dk-charcoal);
+  line-height: 1.45;
+}
+.option-text strong {
+  font-weight: 700;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* --- Radio list (Q2-Q6) --- */
+.radio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-option {
+  background: var(--white);
+  border: 1.5px solid var(--warm-gray);
+  border-radius: 0;
+  padding: 16px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 0.15s;
+  min-height: 52px;
+}
+.radio-option:hover { border-color: var(--purple-mid); }
+.radio-option.selected {
+  border-color: var(--purple);
+  border-width: 2px;
+  box-shadow: 0 0 0 1px var(--purple);
+}
+
+/* --- Q3 neck image options --- */
+.neck-image-zone {
+  width: 100%;
+  height: 36px;
+  background: linear-gradient(135deg, var(--blush), var(--lt-gray));
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+.neck-image-placeholder {
+  font-size: 7px;
+  color: var(--charcoal);
+  opacity: 0.4;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- Back button --- */
+.back-btn {
+  margin-top: 20px;
+  padding-top: 0;
+  text-align: center;
+}
+.back-btn button {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--charcoal);
+  opacity: 0.45;
+  letter-spacing: 0.04em;
+  padding: 14px 24px;
+  min-height: 48px;
+}
+.back-btn button:hover { opacity: 0.7; }
+
+/* ============================================================
+   ANALYZING ANIMATION
+   ============================================================ */
+.analyzing-screen {
+  background: var(--purple-warm);
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+.analyzing-label {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lilac);
+  opacity: 0.7;
+}
+.analyzing-line {
+  width: 64%;
+  height: 1px;
+  background: rgba(195,154,219,0.15);
+  position: relative;
+  overflow: hidden;
+}
+.analyzing-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--lilac), transparent);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}
+.analyzing-dots {
+  display: flex;
+  gap: 8px;
+}
+.analyzing-dots span {
+  width: 4px;
+  height: 4px;
+  background: var(--lilac);
+  border-radius: 0;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.analyzing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.analyzing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1; }
+}
+
+/* ============================================================
+   RESULTS SCREENS
+   ============================================================ */
+.result-header {
+  background: var(--purple-warm);
+  padding: 24px 24px 28px;
+}
+.result-zone-label {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lilac);
+  margin-bottom: 6px;
+}
+.result-copy-flag {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.55;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.result-headline {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--white);
+}
+
+.result-body {
+  background: var(--off-white);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* --- Hero product card --- */
+.product-card {
+  background: var(--white);
+  border: 1px solid var(--warm-gray);
+  border-radius: 0;
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+}
+.product-img-zone {
+  width: 80px;
+  min-height: 90px;
+  flex-shrink: 0;
+  background: var(--lt-gray);
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-img-zone img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.product-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--dk-charcoal);
+}
+.product-mechanism {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--charcoal);
+  opacity: 0.7;
+  line-height: 1.5;
+}
+.product-price {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--purple);
+  margin-top: auto;
+}
+.product-savings {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--purple-mid);
+  font-weight: 700;
+}
+
+/* --- CTA button (results) --- */
+.result-cta {
+  display: block;
+  width: 100%;
+  padding: 18px 24px;
+  background: var(--purple);
+  color: var(--white);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: 0;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.result-cta:hover { background: var(--purple-warm); }
+
+/* --- B&A gallery --- */
+.ba-section { border: 1px solid var(--warm-gray); background: #fff; }
+.ba-section-head {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--lt-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ba-section-label {
+  font-family: var(--font-ui);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--purple-mid);
+  text-transform: uppercase;
+}
+.ba-timeline {
+  font-family: var(--font-ui);
+  font-size: 7px;
+  color: #b0a8a6;
+}
+.ba-combined img { width: 100%; display: block; }
+.ba-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--lt-gray);
+}
+.ba-slot { position: relative; background: var(--off-white); }
+.ba-slot img { width: 100%; display: block; }
+.ba-label {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-family: var(--font-ui);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Bundle upsell --- */
+.bundle-upsell {
+  background: var(--white);
+  border: 1px solid var(--warm-gray);
+  border-left: 3px solid var(--lilac);
+  border-radius: 0;
+  padding: 14px 16px;
+  display: none;
+}
+.bundle-upsell.active { display: block; }
+.bundle-upsell.escalation {
+  border-left-color: var(--purple);
+}
+.bundle-upsell-label {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--purple-mid);
+  margin-bottom: 6px;
+}
+.bundle-upsell-link {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--purple);
+  font-weight: 700;
+  text-decoration: none;
+}
+.bundle-upsell-link:hover { text-decoration: underline; }
+
+/* --- Trust band (comparison table) --- */
+.trust-band {
+  background: #FAF7FB;
+  padding: 22px 20px 18px;
+}
+.tc-heading-row {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--warm-gray);
+  margin-bottom: 2px;
+}
+.tc-col-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.tc-label-against {
+  color: #BDB4B9;
+  padding-right: 14px;
+}
+.tc-label-sbla {
+  color: var(--purple);
+  padding-left: 14px;
+}
+.tc-sbla-wordmark {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--purple);
+  line-height: 1;
+}
+.tc-divider-v {
+  background: var(--warm-gray);
+  width: 1px;
+  align-self: stretch;
+}
+.tc-row {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: center;
+  border-bottom: 1px solid rgba(218,215,213,0.45);
+}
+.tc-row:last-child { border-bottom: none; }
+.tc-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 0;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  line-height: 1.3;
+}
+.tc-cell-left {
+  padding-right: 14px;
+  color: #B2A6AE;
+}
+.tc-cell-right {
+  padding-left: 14px;
+  color: var(--dk-charcoal);
+  font-weight: 500;
+}
+.tc-x {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: #C9AABB;
+}
+.tc-check {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--purple-mid);
+}
+
+/* --- Retake --- */
+.retake-row {
+  text-align: center;
+  padding: 8px 0 24px;
+}
+.retake-btn {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--purple-mid);
+  opacity: 0.7;
+  letter-spacing: 0.04em;
+  padding: 12px 24px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.retake-btn:hover { opacity: 1; }
+
+/* ============================================================
+   SCREEN TRANSITIONS
+   ============================================================ */
+.screen { animation: fadeIn 0.25s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   DESKTOP — Base (hidden on mobile)
+   ============================================================ */
+#desktop-panel { display: none; }
+#quiz-right { width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+/* ============================================================
+   DESKTOP — Tablet (540–899px): Centered Card
+   ============================================================ */
+@media (min-width: 540px) and (max-width: 899px) {
+  body {
+    background: #D4CDD2;
+    padding: 44px 20px 72px;
+    align-items: flex-start;
+  }
+  #quiz-app {
+    min-height: 0;
+    box-shadow: 0 4px 48px rgba(62, 6, 86, 0.14), 0 1px 6px rgba(62, 6, 86, 0.08);
+  }
+  .entry-screen  { min-height: 580px; }
+  .analyzing-screen { min-height: 380px; }
+}
+
+/* ============================================================
+   DESKTOP — Split Screen (900px+)
+   ============================================================ */
+@media (min-width: 900px) {
+  body {
+    flex-direction: row;
+    align-items: stretch;
+    padding: 0;
+    background: var(--white);
+    justify-content: flex-start;
+    min-height: 100dvh;
+  }
+
+  /* ── Left sidebar ── */
+  #desktop-panel {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    min-width: 300px;
+    height: 100dvh;
+    position: sticky;
+    top: 0;
+    background: #160226;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .dp-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 32px 24px 28px;
+    overflow: hidden;
+  }
+  .dp-top {
+    flex-shrink: 0;
+    margin-bottom: 20px;
+  }
+  .dp-wordmark {
+    font-family: var(--font-display);
+    font-size: 17px;
+    letter-spacing: 0.14em;
+    color: var(--white);
+    margin-bottom: 5px;
+  }
+  .dp-eyebrow {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lilac);
+    opacity: 0.5;
+    margin-bottom: 12px;
+  }
+  .dp-headline {
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.3;
+    color: var(--white);
+  }
+  .dp-headline em { color: var(--lilac); font-style: italic; }
+
+  /* ── Comparison table inside panel ── */
+  .dp-table {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+  }
+  .dp-table-hdr {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    padding-bottom: 8px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+  }
+  .dp-tc-col-label {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .dp-tc-col-against { color: rgba(255, 255, 255, 0.45); }
+  .dp-tc-col-sbla { padding-left: 10px; color: var(--lilac); }
+  .dp-tc-div-v { background: rgba(255, 255, 255, 0.14); width: 1px; }
+  .dp-table-row {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .dp-tc-cell {
+    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    font-size: 9px;
+    line-height: 1.35;
+  }
+  .dp-tc-cell-left {
+    padding-right: 8px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .dp-tc-cell-right {
+    padding-left: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+  }
+  .dp-tc-x {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .dp-tc-check {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--lilac);
+  }
+
+  /* ── Photo collage below table ── */
+  .dp-collage {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    gap: 2px;
+    overflow: hidden;
+    grid-template-areas:
+      "a a b"
+      "c d b"
+      "c e f";
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+  .dp-ci { overflow: hidden; min-height: 0; }
+  .dp-ci img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+  .dp-ci:nth-child(1) { grid-area: a; }
+  .dp-ci:nth-child(2) { grid-area: b; }
+  .dp-ci:nth-child(3) { grid-area: c; }
+  .dp-ci:nth-child(4) { grid-area: d; }
+  .dp-ci:nth-child(5) { grid-area: e; }
+  .dp-ci:nth-child(6) { grid-area: f; }
+
+  /* ── Right: full-width, white, seamless ── */
+  #quiz-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--white);
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100dvh;
+  }
+  #quiz-app {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* Entry: hero image */
+  .entry-hero { height: 22dvh; }
+
+  /* Question header: full-width purple band */
+  .q-header { padding: 28px 48px 32px; }
+  .q-headline, .q-sub, .progress-row { max-width: 640px; }
+
+  /* Question body */
+  .q-body { padding: 32px 48px; align-items: center; }
+  .zone-grid, .radio-list, .back-btn { width: 100%; max-width: 640px; }
+
+  /* Entry + analyzing: full-height */
+  .entry-screen, .analyzing-screen { min-height: 100dvh; }
+
+  /* Result page */
+  .result-header { padding-left: 48px; padding-right: 48px; }
+  .result-body {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding: 28px 48px 48px;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<aside id="desktop-panel">
+  <div class="dp-inner">
+
+    <div class="dp-top">
+      <div class="dp-wordmark">SBLA</div>
+      <div class="dp-eyebrow">Skin Solution Finder</div>
+      <h2 class="dp-headline">Your skin isn't aging evenly. <em>It's aging by zone.</em></h2>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="dp-table">
+      <!-- Header row -->
+      <div class="dp-table-hdr">
+        <span class="dp-tc-col-label dp-tc-col-against">Others</span>
+        <div class="dp-tc-div-v"></div>
+        <span class="dp-tc-col-label dp-tc-col-sbla">SBLA</span>
+      </div>
+      <!-- Row 1 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Needles &amp; injections
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          No needles ever
+        </div>
+      </div>
+      <!-- Row 2 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Days of downtime
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Zero downtime
+        </div>
+      </div>
+      <!-- Row 3 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Generic formulas
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Patented Macro-Sphere™
+        </div>
+      </div>
+      <!-- Row 4 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          One-size approach
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Zone-targeted treatment
+        </div>
+      </div>
+      <!-- Row 5 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          No clinical backing
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Clinically proven
+        </div>
+      </div>
+      <!-- Row 6 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Clinic visits required
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          At-home daily ritual
+        </div>
+      </div>
+      <!-- Row 7 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Expensive &amp; ongoing
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          One-time investment
+        </div>
+      </div>
+      <!-- Row 8 -->
+      <div class="dp-table-row">
+        <div class="dp-tc-cell dp-tc-cell-left">
+          <svg class="dp-tc-x" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Dermatologist only
+        </div>
+        <div class="dp-tc-div-v"></div>
+        <div class="dp-tc-cell dp-tc-cell-right">
+          <svg class="dp-tc-check" viewBox="0 0 12 12" fill="none"><path d="M1.5 6l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+          Dermatologist tested
+        </div>
+      </div>
+    </div><!-- /.dp-table -->
+
+    <!-- Photo collage -->
+    <div class="dp-collage">
+      <div class="dp-ci">
+        <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Screen_Shot_2026-03-13_at_10.43.15_AM.png?v=1773413011" alt="">
+      </div>
+      <div class="dp-ci">
+        <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/SBLA_Claudia_app_vertical.jpg?v=1772457481" alt="">
+      </div>
+      <div class="dp-ci">
+        <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/SBLA_Nicole_app_vertical_1.jpg?v=1771939239" alt="">
+      </div>
+      <div class="dp-ci">
+        <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Randi_1_1.png?v=1773950423" alt="">
+      </div>
+      <div class="dp-ci">
+        <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/IMG_8640_1084460a-2a08-4472-97f3-4a65f0e80504.jpg?v=1773950188" alt="">
+      </div>
+      <div class="dp-ci">
+        <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/SBLA_Dawn_app_vertical.jpg?v=1771939389" alt="">
+      </div>
+    </div><!-- /.dp-collage -->
+
+  </div>
+</aside>
+
+<div id="quiz-right">
+<div id="quiz-app">
+
+  <!-- ===================== SCREEN 0: ENTRY ===================== -->
+  <div class="screen entry-screen active" data-screen="entry">
+    <div class="entry-hero">
+      <img src="https://cdn.shopify.com/s/files/1/0023/2911/6735/files/CollectionGroupShot_AngledStaggeredShadows_New_1800x1457_d1c6e3a4-b82a-4ad1-989a-d17025524af6.jpg?v=1773949674" alt="SBLA Beauty — full product collection" class="entry-hero-img">
+    </div>
+    <div class="entry-body">
+      <div class="entry-eyebrow">SBLA Beauty Quiz</div>
+      <h1 class="entry-headline">Your skin isn't aging evenly. <em>It's aging by zone.</em></h1>
+      <p class="entry-sub">Most routines treat the whole face. That's why they deliver half the results.</p>
+      <div class="entry-meta">
+        <span class="entry-meta-tag">6 questions</span>
+        <span class="entry-meta-tag">2 minutes</span>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">Find My Zone →</button>
+    </div>
+  </div>
+
+  <!-- ===================== QUESTION SCREENS ===================== -->
+  <!-- Q1 -->
+  <div class="screen" data-screen="q1">
+    <div class="q-header">
+      <div class="progress-row">
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:16.6%"></div></div>
+        <span class="progress-count">1 / 6</span>
+      </div>
+      <div class="q-headline">What area of your face are you most focused on right now?</div>
+      <div class="q-sub">We'll use your answer to find exactly what your skin needs.</div>
+    </div>
+    <div class="q-body">
+      <div class="zone-grid">
+        <div class="zone-card" data-value="eye" onclick="selectQ1(this)">
+          <div class="zone-icon" data-image-zone="zone-eye">
+            <svg viewBox="0 0 36 36"><path d="M3 18c0 0 6-10 15-10s15 10 15 10 -6 10-15 10S3 18 3 18z" stroke-linejoin="round"/><circle cx="18" cy="18" r="5" /><circle cx="18" cy="18" r="2" fill="var(--purple-mid)" stroke="none"/><path d="M10 8l-2-3M26 8l2-3M18 7V3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="zone-name">Eye area</div>
+          <div class="zone-desc">More open, lifted, and rested</div>
+        </div>
+        <div class="zone-card" data-value="face" onclick="selectQ1(this)">
+          <div class="zone-icon" data-image-zone="zone-face">
+            <svg viewBox="0 0 36 36"><path d="M18 4c-5 0-9 3-10 8-.5 2-.5 4 0 6 1 3 3 6 5 8 1.5 1.5 3 2.5 5 2.5s3.5-1 5-2.5c2-2 4-5 5-8 .5-2 .5-4 0-6-1-5-5-8-10-8z" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="zone-name">Full face</div>
+          <div class="zone-desc">Firmer, smoother, more youthful</div>
+        </div>
+        <div class="zone-card" data-value="neck" onclick="selectQ1(this)">
+          <div class="zone-icon" data-image-zone="zone-neck">
+            <svg viewBox="0 0 36 36"><path d="M13 4c-1 3-2 6-2 9 0 2-1 5-3 7-1.5 1.5-2 4-1 6 1 2 4 4 11 4s10-2 11-4c1-2 .5-4.5-1-6-2-2-3-5-3-7 0-3-1-6-2-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 4h10" stroke-linecap="round"/></svg>
+          </div>
+          <div class="zone-name">Neck & jaw</div>
+          <div class="zone-desc">More definition and tightness</div>
+        </div>
+        <div class="zone-card" data-value="lip" onclick="selectQ1(this)">
+          <div class="zone-icon" data-image-zone="zone-lip">
+            <svg viewBox="0 0 36 36"><path d="M6 17c0 0 4-2 7-2 2 0 3 3 5 3s3-3 5-3c3 0 7 2 7 2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 17c0 0 4 8 12 8s12-8 12-8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 17h24" opacity="0.3"/><path d="M15 21a3 2 0 0 0 6 0" stroke-linecap="round" opacity="0.4"/></svg>
+          </div>
+          <div class="zone-name">Lips</div>
+          <div class="zone-desc">More volume and defined shape</div>
+        </div>
+      </div>
+      <div class="option-full" data-value="all" onclick="selectQ1(this)">
+        <div class="option-radio"></div>
+        <div class="option-text">
+          <strong>Honestly? Everything.</strong>
+          I want to address multiple areas at once
+        </div>
+      </div>
+      <div class="back-btn" style="visibility:hidden"><button>← Back</button></div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="screen" data-screen="q2">
+    <div class="q-header">
+      <div class="progress-row">
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:33.2%"></div></div>
+        <span class="progress-count">2 / 6</span>
+      </div>
+      <div class="q-headline">Is there another area you've been thinking about too?</div>
+      <div class="q-sub">Most people have more than one thing on their mind — and that's completely normal.</div>
+    </div>
+    <div class="q-body">
+      <div class="radio-list" id="q2-options"></div>
+      <div class="back-btn"><button onclick="goBack()">← Back</button></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="screen" data-screen="q3">
+    <div class="q-header">
+      <div class="progress-row">
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:50%"></div></div>
+        <span class="progress-count">3 / 6</span>
+      </div>
+      <div class="q-headline" id="q3-headline"></div>
+    </div>
+    <div class="q-body">
+      <div class="radio-list" id="q3-options"></div>
+      <div class="back-btn"><button onclick="goBack()">← Back</button></div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="screen" data-screen="q4">
+    <div class="q-header">
+      <div class="progress-row">
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:66.6%"></div></div>
+        <span class="progress-count">4 / 6</span>
+      </div>
+      <div class="q-headline">How would you describe your relationship with skincare right now?</div>
+    </div>
+    <div class="q-body">
+      <div class="radio-list">
+        <div class="radio-option" onclick="selectRadio(this,'q4','entry')">
+          <div class="option-radio"></div>
+          <div class="option-text">I'm just starting to build a routine and getting serious about it</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q4','engaged')">
+          <div class="option-radio"></div>
+          <div class="option-text">I have a consistent morning and night routine</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q4','results_chaser')">
+          <div class="option-radio"></div>
+          <div class="option-text">I've tried a lot of things but struggle to stay consistent because I never really see results</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q4','high_intent')">
+          <div class="option-radio"></div>
+          <div class="option-text">Skincare is a serious priority for me — I invest in what works</div>
+        </div>
+      </div>
+      <div class="back-btn"><button onclick="goBack()">← Back</button></div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="screen" data-screen="q5">
+    <div class="q-header">
+      <div class="progress-row">
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:83.3%"></div></div>
+        <span class="progress-count">5 / 6</span>
+      </div>
+      <div class="q-headline">What's your experience with targeted skincare?</div>
+    </div>
+    <div class="q-body">
+      <div class="radio-list">
+        <div class="radio-option" onclick="selectRadio(this,'q5','mechanism_differentiator')">
+          <div class="option-radio"></div>
+          <div class="option-text">Yes — creams and serums, but I haven't seen the results I was hoping for</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q5','upgrade_positioning')">
+          <div class="option-radio"></div>
+          <div class="option-text">Yes — I've used tools or devices as part of my routine</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q5','education_first')">
+          <div class="option-radio"></div>
+          <div class="option-text">I'm fairly new to targeted treatments like this</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q5','loyalty')">
+          <div class="option-radio"></div>
+          <div class="option-text">I've used SBLA before and I'm looking for what's next</div>
+        </div>
+      </div>
+      <div class="back-btn"><button onclick="goBack()">← Back</button></div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="screen" data-screen="q6">
+    <div class="q-header">
+      <div class="progress-row">
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:100%"></div></div>
+        <span class="progress-count">6 / 6</span>
+      </div>
+      <div class="q-headline">What would make you feel like it actually worked?</div>
+      <div class="q-sub">Picture yourself three weeks from now.</div>
+    </div>
+    <div class="q-body">
+      <div class="radio-list">
+        <div class="radio-option" onclick="selectRadio(this,'q6','eye')">
+          <div class="option-radio"></div>
+          <div class="option-text">Looking genuinely rested and refreshed — eyes that look open and awake</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q6','face')">
+          <div class="option-radio"></div>
+          <div class="option-text">Skin that feels firmer and looks smoother — more like it used to</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q6','neck')">
+          <div class="option-radio"></div>
+          <div class="option-text">A more lifted, sculpted neck and jaw — no procedures, no downtime</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q6','lip')">
+          <div class="option-radio"></div>
+          <div class="option-text">Lips that look naturally fuller and more defined</div>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this,'q6','all')">
+          <div class="option-radio"></div>
+          <div class="option-text">An overall transformation — I want to feel like myself again, everywhere</div>
+        </div>
+      </div>
+      <div class="back-btn"><button onclick="goBack()">← Back</button></div>
+    </div>
+  </div>
+
+  <!-- ANALYZING (before results) -->
+  <div class="screen analyzing-screen" data-screen="analyzing2">
+    <div class="analyzing-label">Analyzing your decisions</div>
+    <div class="analyzing-line"></div>
+    <div class="analyzing-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" data-screen="result">
+    <div class="result-header">
+      <div class="result-zone-label" id="result-zone-label"></div>
+      <div class="result-copy-flag" id="result-copy-flag"></div>
+      <div class="result-headline" id="result-headline"></div>
+    </div>
+    <div class="result-body">
+      <div class="product-card" id="hero-product-card">
+        <div class="product-img-zone" id="hero-product-img"></div>
+        <div class="product-info">
+          <div class="product-name" id="hero-product-name"></div>
+          <div class="product-mechanism" id="hero-product-mechanism"></div>
+          <div class="product-price" id="hero-product-price"></div>
+          <div class="product-savings" id="hero-product-savings"></div>
+        </div>
+      </div>
+      <a class="result-cta" id="hero-cta" href="#" target="_blank"></a>
+      <div class="ba-section" id="ba-section">
+        <div class="ba-section-head">
+          <span class="ba-section-label" id="ba-section-label">See what it can do</span>
+          <span class="ba-timeline" id="ba-timeline">After 6 weeks</span>
+        </div>
+        <div id="ba-content"></div>
+      </div>
+      <div class="bundle-upsell" id="bundle-upsell">
+        <div class="bundle-upsell-label" id="bundle-upsell-label">Ready to go further?</div>
+        <a class="bundle-upsell-link" id="bundle-upsell-link" href="#" target="_blank"></a>
+      </div>
+      <div class="trust-band">
+        <!-- Column headers -->
+        <div class="tc-heading-row">
+          <div class="tc-col-label tc-label-against">Injectables &amp; Procedures</div>
+          <div class="tc-divider-v"></div>
+          <div class="tc-col-label tc-label-sbla">
+            <span class="tc-sbla-wordmark">SBLA</span>
+          </div>
+        </div>
+        <!-- Row 1 -->
+        <div class="tc-row">
+          <div class="tc-cell tc-cell-left">
+            <svg class="tc-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Needles &amp; injections</span>
+          </div>
+          <div class="tc-divider-v"></div>
+          <div class="tc-cell tc-cell-right">
+            <svg class="tc-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>No needles or lasers</span>
+          </div>
+        </div>
+        <!-- Row 2 -->
+        <div class="tc-row">
+          <div class="tc-cell tc-cell-left">
+            <svg class="tc-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Days of downtime</span>
+          </div>
+          <div class="tc-divider-v"></div>
+          <div class="tc-cell tc-cell-right">
+            <svg class="tc-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>Zero downtime</span>
+          </div>
+        </div>
+        <!-- Row 3 -->
+        <div class="tc-row">
+          <div class="tc-cell tc-cell-left">
+            <svg class="tc-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Expensive ongoing costs</span>
+          </div>
+          <div class="tc-divider-v"></div>
+          <div class="tc-cell tc-cell-right">
+            <svg class="tc-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>One-time investment</span>
+          </div>
+        </div>
+        <!-- Row 4 -->
+        <div class="tc-row">
+          <div class="tc-cell tc-cell-left">
+            <svg class="tc-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Unpredictable results</span>
+          </div>
+          <div class="tc-divider-v"></div>
+          <div class="tc-cell tc-cell-right">
+            <svg class="tc-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>Clinically proven</span>
+          </div>
+        </div>
+        <!-- Row 5 -->
+        <div class="tc-row">
+          <div class="tc-cell tc-cell-left">
+            <svg class="tc-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Doctor&#8217;s office only</span>
+          </div>
+          <div class="tc-divider-v"></div>
+          <div class="tc-cell tc-cell-right">
+            <svg class="tc-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>Dermatologist tested</span>
+          </div>
+        </div>
+      </div>
+      <div class="retake-row">
+        <button class="retake-btn" onclick="retakeQuiz()">← Retake quiz</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#quiz-app -->
+</div><!-- /#quiz-right -->
+
+<script>
+/* ==============================================================
+   SBLA QUIZ — SCORING ENGINE + UI CONTROLLER
+   ============================================================== */
+
+// ── Product Data ──
+const PRODUCTS = {
+  eyeLiftWand: {
+    name: "Eye Lift Wand",
+    mechanism: "SBLA66Peptide\u2122 \u2014 clinically proven to lift, tighten, and open the eye area.",
+    price: "$89.40", originalPrice: "$149", savings: "Save $60",
+    url: "https://sbla.com/products/eye-lift-wand",
+    image: "https://sbla.com/cdn/shop/files/ELW_1.jpg?v=1768945005",
+    zone: "eye", tier: "P1", priorityPts: 26
+  },
+  liquidFacelift: {
+    name: "Liquid Facelift Wand",
+    mechanism: "Line Relaxing Complex \u2014 peptides and amino acids that eliminate fine lines within hours.",
+    price: "$107.40", originalPrice: "$179", savings: "Save $72",
+    url: "https://sbla.com/products/liquid-facelift-wand",
+    image: "https://sbla.com/cdn/shop/files/LFW_1.jpg?v=1758647168",
+    zone: "face", tier: "P1", priorityPts: 26
+  },
+  neckStandard: {
+    name: "Neck, Chin & Jawline Sculpting Wand",
+    mechanism: "Macro-Sphere technology \u2014 firms, lifts, and sculpts the neck and jawline progressively.",
+    price: "$53.40", originalPrice: "$89", savings: "Save $36",
+    url: "https://sbla.com/products/neck-chin-jawline-sculpting-wand-1",
+    image: "https://sbla.com/cdn/shop/files/OG_1_450x450.jpg?v=1758647211",
+    zone: "neck", tier: "P2", priorityPts: 20
+  },
+  neckXL: {
+    name: "Neck, Chin & Jawline Sculpting Wand XL",
+    mechanism: "Fat Melting Complex \u2014 clinically proven to melt fat under the chin and define the jawline.",
+    price: "$77.40", originalPrice: "$129", savings: "Save $52",
+    url: "https://sbla.com/products/neck-chin-jawline-sculpting-wand-xl",
+    image: "https://sbla.com/cdn/shop/files/XL_1_450x450.jpg?v=1758647186",
+    zone: "neck", tier: "P2", priorityPts: 20
+  },
+  lip: {
+    name: "Double The Plump Lip Plump & Sculpt",
+    mechanism: "LIPerfection\u2122 \u2014 immediate plumping and definition. No injections.",
+    price: "$31.20", originalPrice: "$52", savings: "Save $21",
+    url: "https://sbla.com/products/limited-edition-double-the-plump-lip-plump-sculpt",
+    image: "https://sbla.com/cdn/shop/files/Double_the_Plump_Randi_1_grande.jpg?v=1721683828",
+    zone: "lip", tier: "P4", priorityPts: 8
+  },
+  powerTrio: {
+    name: "The Power Trio Set",
+    mechanism: "Liquid Facelift + Eye Lift + Neck XL. Three zones. One complete routine.",
+    price: "$204", originalPrice: "$457", savings: "Save $253",
+    url: "https://sbla.com/products/the-power-trio-set",
+    image: "https://sbla.com/cdn/shop/files/The_Power_Trio_Set_Cap_off_1_450x450.jpg?v=1764257296",
+    zone: "multi", tier: "P3", priorityPts: 14
+  },
+  essentialCollection: {
+    name: "The Essential Collection",
+    mechanism: "All four wands. Face, eyes, neck standard, and neck XL.",
+    price: "$246", originalPrice: "$546", savings: "Save $300",
+    url: "https://sbla.com/products/essential-collection-set",
+    image: "https://sbla.com/cdn/shop/files/Essentials_Collection_Set_Cap_off_1_450x450.jpg?v=1764257351",
+    zone: "multi", tier: "P3", priorityPts: 14
+  },
+  ultimateSculpting: {
+    name: "The Ultimate Sculpting Set",
+    mechanism: "Every SBLA wand. The complete non-invasive alternative to procedures.",
+    price: "$268.80", originalPrice: "$598", savings: "Save $329",
+    url: "https://sbla.com/products/the-ultimate-sculpting-set",
+    image: "https://sbla.com/cdn/shop/files/The_Ultimate_Sculpting_Set_Cap_off-1_450x450.jpg?v=1764257381",
+    zone: "multi", tier: "P4", priorityPts: 8
+  },
+  neckDuoSet: {
+    name: "Neck + Neck XL Duo Set",
+    mechanism: "Both neck wands together \u2014 firming and sculpting in one routine.",
+    price: "$117", originalPrice: "$218", savings: "Save $101",
+    url: "https://sbla.com/products/neck-chin-jawline-sculpting-wand-and-sculpting-wand-xl-duo-set",
+    image: "https://sbla.com/cdn/shop/files/XL_OG_DUO_1_grande.jpg?v=1721683440",
+    zone: "neck", tier: "P3", priorityPts: 14
+  },
+  yourBestFace: {
+    name: "Your Best Face Set",
+    mechanism: "Eye Lift + Liquid Facelift. Eyes and face addressed together.",
+    price: "$171", originalPrice: "$380", savings: "Save $209",
+    url: "https://sbla.com/products/your-best-face-set",
+    image: "https://sbla.com/cdn/shop/files/Your_Best_Face_Set_Cap_off_1_450x450.jpg?v=1764257324",
+    zone: "multi", tier: "P4", priorityPts: 8
+  }
+};
+
+const UTM = '?utm_source=quiz&utm_medium=result&utm_campaign=sbla-quiz-v1&utm_content=result-';
+
+const COPY_FLAGS = {
+  mechanism_differentiator: "You\u2019ve tried the creams. Here\u2019s why the wand delivery system is clinically different.",
+  upgrade_positioning: "You\u2019ve used tools before. SBLA\u2019s wand technology is the targeted evolution.",
+  education_first: "New to targeted treatments? Here\u2019s exactly what this formula addresses \u2014 and why it works.",
+  loyalty: "You know SBLA. Here\u2019s your next step in the routine."
+};
+
+const ZONE_LABELS = {
+  eye: "YOUR EYE AREA",
+  face: "YOUR FACE",
+  neck: "YOUR NECK & JAWLINE",
+  lip: "YOUR LIPS",
+  multi: "YOUR FULL ROUTINE"
+};
+
+// ── State ──
+let state = {
+  currentScreen: 'entry',
+  history: [],
+  scores: { eye: 0, face: 0, neck: 0, lip: 0 },
+  q1: null,
+  q2: null,
+  q3: null,
+  q3_neck_variant: null, // 'standard' | 'xl' | 'both'
+  q4: null,
+  q5_copyFlag: null,
+  q6: null,
+  hardBundleTrigger: false,
+  bundleUpsellFlag: false,
+  escalationFlag: false,
+  neckResolution: 'xl', // default XL bias per scoring doc
+  bundleConsiderationFlag: false
+};
+
+function resetState() {
+  state = {
+    currentScreen: 'entry', history: [],
+    scores: { eye: 0, face: 0, neck: 0, lip: 0 },
+    q1: null, q2: null, q3: null, q3_neck_variant: null,
+    q4: null, q5_copyFlag: null, q6: null,
+    hardBundleTrigger: false, bundleUpsellFlag: false,
+    escalationFlag: false, neckResolution: 'xl',
+    bundleConsiderationFlag: false
+  };
+}
+
+// ── Navigation ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`[data-screen="${id}"]`);
+  if (target) {
+    target.classList.add('active');
+    target.style.animation = 'none';
+    target.offsetHeight; // reflow
+    target.style.animation = '';
+    state.currentScreen = id;
+  }
+}
+
+function goBack() {
+  if (state.history.length > 0) {
+    const prev = state.history.pop();
+    showScreen(prev);
+  }
+}
+
+function navigateTo(id) {
+  state.history.push(state.currentScreen);
+  showScreen(id);
+}
+
+// ── Entry ──
+function startQuiz() {
+  navigateTo('q1');
+}
+
+// ── Q1 — Primary Concern (+50) ──
+function selectQ1(el) {
+  // Clear previous selections
+  document.querySelectorAll('[data-screen="q1"] .zone-card, [data-screen="q1"] .option-full').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const val = el.dataset.value;
+  state.q1 = val;
+
+  // Reset scores
+  state.scores = { eye: 0, face: 0, neck: 0, lip: 0 };
+
+  if (val === 'all') {
+    // Hard bundle trigger: +20 to each zone
+    state.scores.eye = 20;
+    state.scores.face = 20;
+    state.scores.neck = 20;
+    state.scores.lip = 20;
+    state.hardBundleTrigger = true;
+  } else {
+    state.scores[val] = 50;
+    state.hardBundleTrigger = false;
+  }
+
+  setTimeout(() => {
+    buildQ2();
+    navigateTo('q2');
+  }, 300);
+}
+
+// ── Q2 — Secondary Concern (+25) ──
+function buildQ2() {
+  const container = document.getElementById('q2-options');
+  container.innerHTML = '';
+
+  const zoneLabels = {
+    eye: 'My eye area',
+    face: 'My face and overall firmness',
+    neck: 'My neck and jawline',
+    lip: 'My lips'
+  };
+
+  const q1Labels = {
+    eye: 'my eyes',
+    face: 'my face',
+    neck: 'my neck and jawline',
+    lip: 'my lips',
+    all: 'everything'
+  };
+
+  const zones = [
+    { val: 'eye', text: zoneLabels.eye },
+    { val: 'face', text: zoneLabels.face },
+    { val: 'neck', text: zoneLabels.neck },
+    { val: 'lip', text: zoneLabels.lip },
+    { val: 'none', text: `No, I\u2019m focused on ${q1Labels[state.q1] || 'the one'}` }
+  ];
+
+  // Filter out the zone they chose in Q1 (unless 'all')
+  const filtered = state.q1 === 'all'
+    ? [zones[4]] // only show "no" option if they chose all
+    : zones.filter(z => z.val !== state.q1);
+
+  filtered.forEach(z => {
+    const div = document.createElement('div');
+    div.className = 'radio-option';
+    div.onclick = () => selectRadio(div, 'q2', z.val);
+    div.innerHTML = `<div class="option-radio"></div><div class="option-text">${z.text}</div>`;
+    container.appendChild(div);
+  });
+}
+
+// ── Q3 — Diagnostic (+10 / +5) — Conditional ──
+function buildQ3() {
+  const headline = document.getElementById('q3-headline');
+  const container = document.getElementById('q3-options');
+  container.innerHTML = '';
+
+  const isNeckRouted = state.q1 === 'neck' || state.q2 === 'neck';
+
+  if (isNeckRouted) {
+    headline.textContent = 'When you focus on your neck and jaw area, what stands out most?';
+    const opts = [
+      { val: 'standard', label: 'Loose, crepey, or sagging skin', imgDesc: 'Crepey neck texture' },
+      { val: 'xl', label: 'Under-chin fullness or loss of a defined jawline', imgDesc: 'Under-chin fullness' },
+      { val: 'both', label: 'Both \u2014 the full area has changed', imgDesc: 'Full neck + jaw area' }
+    ];
+    opts.forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'radio-option';
+      div.style.flexDirection = 'column';
+      div.style.alignItems = 'stretch';
+      div.onclick = () => selectRadio(div, 'q3', o.val);
+      div.innerHTML = `
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div class="option-radio"></div>
+          <div class="option-text">${o.label}</div>
+        </div>
+        <div class="neck-image-zone" data-image-zone="neck-${o.val}">
+          <span class="neck-image-placeholder">Image \u2014 ${o.imgDesc}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+  } else {
+    headline.textContent = 'What does your skin tell you most?';
+    const opts = [
+      { val: 'face', text: 'It feels dry or tight, especially after cleansing' },
+      { val: 'eye', text: 'I notice puffiness \u2014 usually in the morning around my eyes' },
+      { val: 'neck', text: 'It\u2019s lost some of that bounce and elasticity it used to have' },
+      { val: 'lip', text: 'The lines around my lips have been getting more noticeable' }
+    ];
+    opts.forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'radio-option';
+      div.onclick = () => selectRadio(div, 'q3', o.val);
+      div.innerHTML = `<div class="option-radio"></div><div class="option-text">${o.text}</div>`;
+      container.appendChild(div);
+    });
+  }
+}
+
+// ── Generic radio select + auto-advance ──
+function selectRadio(el, question, value) {
+  // Visual
+  el.closest('.q-body').querySelectorAll('.radio-option').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+
+  // Score
+  switch(question) {
+    case 'q2':
+      state.q2 = value;
+      if (value !== 'none') {
+        state.scores[value] = (state.scores[value] || 0) + 25;
+      }
+      setTimeout(() => { buildQ3(); navigateTo('q3'); }, 300);
+      break;
+
+    case 'q3':
+      state.q3 = value;
+      const isNeckRouted = state.q1 === 'neck' || state.q2 === 'neck';
+      if (isNeckRouted) {
+        state.q3_neck_variant = value;
+        if (value === 'standard') {
+          state.neckResolution = 'standard';
+          state.scores.neck += 5;
+        } else if (value === 'xl') {
+          state.neckResolution = 'xl';
+          state.scores.neck += 5;
+        } else { // both
+          state.neckResolution = 'xl';
+          state.scores.neck += 5;
+          state.bundleConsiderationFlag = true;
+        }
+      } else {
+        state.scores[value] = (state.scores[value] || 0) + 10;
+      }
+      setTimeout(() => navigateTo('q4'), 300);
+      break;
+
+    case 'q4':
+      state.q4 = value;
+      if (value === 'entry') {
+        // +5 to eye or face (entry SKUs)
+        if (state.scores.eye >= state.scores.face) state.scores.eye += 5;
+        else state.scores.face += 5;
+      } else if (value === 'engaged' || value === 'results_chaser') {
+        // +5 to current winning zone
+        const winZone = getWinningZone();
+        state.scores[winZone] += 5;
+      } else if (value === 'high_intent') {
+        // +5 to all zones + escalation flag
+        state.scores.eye += 5;
+        state.scores.face += 5;
+        state.scores.neck += 5;
+        state.scores.lip += 5;
+        state.escalationFlag = true;
+      }
+      setTimeout(() => navigateTo('q5'), 300);
+      break;
+
+    case 'q5':
+      state.q5_copyFlag = value;
+      // Zero zone points — copy flag only. Go straight to Q6.
+      setTimeout(() => navigateTo('q6'), 300);
+      break;
+
+    case 'q6':
+      state.q6 = value;
+      if (value === 'all') {
+        state.hardBundleTrigger = true;
+      } else {
+        state.scores[value] = (state.scores[value] || 0) + 10;
+      }
+      setTimeout(() => {
+        navigateTo('analyzing2');
+        setTimeout(() => calculateResult(), 1800);
+      }, 300);
+      break;
+  }
+}
+
+// ── Helpers ──
+function getWinningZone() {
+  const s = state.scores;
+  let max = -1, winner = 'eye';
+  for (const z of ['eye','face','neck','lip']) {
+    if (s[z] > max) { max = s[z]; winner = z; }
+  }
+  return winner;
+}
+
+function getSecondZone() {
+  const s = state.scores;
+  const sorted = Object.entries(s).sort((a,b) => b[1] - a[1]);
+  return sorted.length > 1 ? { zone: sorted[1][0], score: sorted[1][1] } : null;
+}
+
+// ── Scoring Engine — Result Calculation ──
+function calculateResult() {
+  const s = state.scores;
+
+  // 1. Check hard bundle triggers: Q1='All of it' OR Q6='transformation'
+  if (state.hardBundleTrigger) {
+    renderResult(7);
+    return;
+  }
+
+  // 2. Lip restriction: LIP zone score must be > 30 to recommend lip
+  const lipEligible = s.lip > 30;
+
+  // 3. Find winning zone
+  let winZone = getWinningZone();
+
+  // If lip wins but isn't eligible, fall to next best
+  if (winZone === 'lip' && !lipEligible) {
+    const savedLip = s.lip;
+    s.lip = 0; // temporarily zero for ranking
+    winZone = getWinningZone();
+    s.lip = savedLip; // restore
+  }
+
+  // 4. Check competing zones trigger (two zones within 10 pts)
+  const second = getSecondZone();
+  if (second && (s[winZone] - second.score) <= 10 && second.score > 0) {
+    state.bundleUpsellFlag = true;
+  }
+
+  // 5. Neck + Secondary trigger: NECK primary AND any 2nd zone > 20
+  if (winZone === 'neck' && second && second.score > 20) {
+    state.bundleUpsellFlag = true;
+  }
+
+  // 6. Q4 High-Intent Escalation: if escalation flag AND any bundle signal
+  //    → escalate bundle tier (Power Trio → Essential → Ultimate)
+  if (state.escalationFlag && (state.bundleUpsellFlag || state.bundleConsiderationFlag)) {
+    state.bundleUpsellFlag = true; // ensure upsell shows
+  }
+
+  // 7. Primary Multi-Zone trigger check:
+  //    if bundleUpsellFlag AND escalationFlag AND multiple zones competitive → bundle primary
+  if (state.bundleUpsellFlag && state.escalationFlag && second && (s[winZone] - second.score) <= 10) {
+    renderResult(6);
+    return;
+  }
+
+  // 8. Determine result state for single-SKU results
+  let resultState;
+  if (winZone === 'eye') {
+    resultState = 1;
+  } else if (winZone === 'face') {
+    resultState = 2;
+  } else if (winZone === 'neck') {
+    // Neck resolution: standard vs XL
+    // Neck Standard restriction: cannot recommend Standard if Q3='xl' (under-chin fullness)
+    if (state.neckResolution === 'standard') {
+      resultState = 4;
+    } else {
+      resultState = 3;
+    }
+  } else if (winZone === 'lip' && lipEligible) {
+    resultState = 5;
+  } else {
+    // Fallback — face (most common default)
+    resultState = 2;
+  }
+
+  renderResult(resultState);
+}
+
+// ── Result Rendering ──
+function renderResult(resultState) {
+  let hero, bundleProduct, bundleLabel, isBundlePrimary = false;
+  const s = state.scores;
+
+  switch(resultState) {
+    case 1: // EYE wins
+      hero = PRODUCTS.eyeLiftWand;
+      if (state.bundleUpsellFlag) {
+        bundleProduct = PRODUCTS.yourBestFace;
+        bundleLabel = "Ready to go further?";
+      }
+      break;
+    case 2: // FACE wins
+      hero = PRODUCTS.liquidFacelift;
+      if (state.bundleUpsellFlag) {
+        bundleProduct = PRODUCTS.yourBestFace;
+        bundleLabel = "Ready to go further?";
+      }
+      break;
+    case 3: // NECK wins — XL
+      hero = PRODUCTS.neckXL;
+      if (state.bundleUpsellFlag) {
+        // Escalation: high-intent → Power Trio (covers Face+Eye+Neck)
+        // Standard: Neck Duo Set or Power Trio if secondary zone active
+        if (state.escalationFlag) {
+          bundleProduct = PRODUCTS.powerTrio;
+        } else {
+          const sec = getSecondZone();
+          bundleProduct = (sec && (sec.zone === 'eye' || sec.zone === 'face'))
+            ? PRODUCTS.powerTrio : PRODUCTS.neckDuoSet;
+        }
+        bundleLabel = "Ready to go further?";
+      }
+      break;
+    case 4: // NECK wins — Standard
+      hero = PRODUCTS.neckStandard;
+      if (state.bundleUpsellFlag) {
+        bundleProduct = PRODUCTS.neckDuoSet;
+        bundleLabel = "Ready to go further?";
+      }
+      break;
+    case 5: // LIP wins
+      hero = PRODUCTS.lip;
+      if (state.bundleUpsellFlag) {
+        bundleProduct = PRODUCTS.ultimateSculpting;
+        bundleLabel = "Ready to go further?";
+      }
+      break;
+    case 6: // Multi-zone trigger
+      isBundlePrimary = true;
+      hero = state.escalationFlag ? PRODUCTS.essentialCollection : PRODUCTS.powerTrio;
+      if (state.escalationFlag) {
+        bundleProduct = PRODUCTS.ultimateSculpting;
+        bundleLabel = "Add lips to your routine";
+      }
+      break;
+    case 7: // Hard trigger — hero is the top bundle, no further upsell needed
+      isBundlePrimary = true;
+      hero = state.escalationFlag ? PRODUCTS.ultimateSculpting : PRODUCTS.essentialCollection;
+      // No upsell block — they're already at the top tier recommendation
+      break;
+  }
+
+  // Zone label
+  const zoneLabel = document.getElementById('result-zone-label');
+  if (isBundlePrimary) {
+    zoneLabel.textContent = 'YOUR COMPLETE ROUTINE';
+  } else {
+    zoneLabel.textContent = ZONE_LABELS[hero.zone] || 'YOUR RESULT';
+  }
+
+  // Copy flag
+  const copyFlagEl = document.getElementById('result-copy-flag');
+  if (state.q5_copyFlag && COPY_FLAGS[state.q5_copyFlag]) {
+    copyFlagEl.textContent = COPY_FLAGS[state.q5_copyFlag];
+    copyFlagEl.style.display = 'block';
+  } else {
+    copyFlagEl.style.display = 'none';
+  }
+
+  // Headline
+  const headline = document.getElementById('result-headline');
+  if (isBundlePrimary) {
+    headline.textContent = "You\u2019re ready for the full routine. Here\u2019s where to start.";
+  } else {
+    const zoneNames = { eye: 'your eye area', face: 'your face', neck: 'your neck and jawline', lip: 'your lips' };
+    headline.textContent = `You need a formula built for ${zoneNames[hero.zone] || 'your skin'}. Here\u2019s SBLA\u2019s clinical answer.`;
+  }
+
+  // Hero product card
+  const imgZone = document.getElementById('hero-product-img');
+  if (hero.image) {
+    imgZone.innerHTML = `<img src="${hero.image}" alt="${hero.name}" loading="lazy">`;
+  } else {
+    imgZone.innerHTML = '<div style="width:100%;height:100%;background:var(--blush)"></div>';
+  }
+  document.getElementById('hero-product-name').textContent = hero.name;
+  document.getElementById('hero-product-mechanism').textContent = hero.mechanism;
+  const priceEl = document.getElementById('hero-product-price');
+  if (hero.originalPrice) {
+    priceEl.innerHTML = `<span style="text-decoration:line-through;opacity:0.4;font-size:14px;font-weight:400;margin-right:6px">${hero.originalPrice}</span>${hero.price}`;
+  } else {
+    priceEl.textContent = hero.price;
+  }
+  const savingsEl = document.getElementById('hero-product-savings');
+  if (hero.savings) {
+    savingsEl.textContent = hero.savings;
+    savingsEl.style.display = 'block';
+  } else {
+    savingsEl.style.display = 'none';
+  }
+
+  // CTA — use short name to fit on 1 line
+  const ctaShortNames = {
+    'Eye Lift Wand': 'Eye Lift Wand',
+    'Liquid Facelift Wand': 'Liquid Facelift Wand',
+    'Neck, Chin & Jawline Sculpting Wand': 'Neck Sculpting Wand',
+    'Neck, Chin & Jawline Sculpting Wand XL': 'Neck Sculpting Wand XL',
+    'Double The Plump Lip Plump & Sculpt': 'Double The Plump',
+    'The Power Trio Set': 'Power Trio Set',
+    'The Essential Collection': 'Essential Collection',
+    'The Ultimate Sculpting Set': 'Ultimate Sculpting Set',
+    'Neck + Neck XL Duo Set': 'Neck Duo Set',
+    'Your Best Face Set': 'Your Best Face Set'
+  };
+  const cta = document.getElementById('hero-cta');
+  const shortName = ctaShortNames[hero.name] || hero.name;
+  cta.textContent = `Shop ${shortName} \u2192`;
+  cta.href = hero.url + UTM + resultState;
+
+  // B&A — per-state data map
+  // Note: code cases 3=NeckXL, 4=NeckStandard (swapped from display order)
+  const BA_DATA = {
+    1: { type: 'combined', timeline: 'Results over time',
+         src: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/sbla-ba-eye_jpg.jpg?v=1773949586' },
+    2: { type: 'combined', timeline: 'After 21 days',
+         src: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/sbla-ba-facelift_jpg.jpg?v=1773949596' },
+    3: { type: 'combined', timeline: 'In as little as 14 days',
+         src: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/sbla-ba-neck-xl_jpg.jpg?v=1773949584' },
+    4: { type: 'split',    timeline: 'After 6 weeks',
+         before: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Avis_W_-_Age_50_Before_sbla-ba-neck-standard_V2.jpg?v=1773949585',
+         after:  'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Avis_W_-_Age_50_After_sbla-ba-neck-standard_V2.jpg?v=1773949585' },
+    5: { type: 'none',     timeline: 'Immediate results' },
+    6: { type: 'split',    timeline: 'In as little as 14 days',
+         before: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Gretchen_45_Before_sbla-ba-neck-bundle_jpg.jpg?v=1773949584',
+         after:  'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Gretchen_45_After_sbla-ba-neck-bundle_jpg.jpg?v=1773949584' },
+    7: { type: 'split',    timeline: 'In as little as 14 days',
+         before: 'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Gretchen_45_Before_sbla-ba-neck-bundle_jpg.jpg?v=1773949584',
+         after:  'https://cdn.shopify.com/s/files/1/0023/2911/6735/files/Gretchen_45_After_sbla-ba-neck-bundle_jpg.jpg?v=1773949584' }
+  };
+
+  // B&A section label
+  document.getElementById('ba-section-label').textContent =
+    isBundlePrimary ? 'See what the full routine can do' : `See what ${hero.name} can do`;
+
+  // B&A content + timeline
+  const baData    = BA_DATA[resultState] || { type: 'none', timeline: '' };
+  const baSection = document.getElementById('ba-section');
+  const baContent = document.getElementById('ba-content');
+  document.getElementById('ba-timeline').textContent = baData.timeline;
+
+  if (baData.type === 'combined') {
+    baSection.style.display = '';
+    baContent.innerHTML = `<div class="ba-combined"><img src="${baData.src}" alt="Before and after results" loading="lazy"></div>`;
+  } else if (baData.type === 'split') {
+    baSection.style.display = '';
+    baContent.innerHTML = `<div class="ba-split">
+      <div class="ba-slot"><img src="${baData.before}" alt="Before" loading="lazy"><span class="ba-label">Before</span></div>
+      <div class="ba-slot"><img src="${baData.after}"  alt="After"  loading="lazy"><span class="ba-label">After</span></div>
+    </div>`;
+  } else {
+    baSection.style.display = 'none';
+  }
+
+  // Bundle upsell
+  const bundleBlock = document.getElementById('bundle-upsell');
+  if (bundleProduct) {
+    bundleBlock.classList.add('active');
+    bundleBlock.classList.toggle('escalation', isBundlePrimary);
+    document.getElementById('bundle-upsell-label').textContent = bundleLabel;
+    const bLink = document.getElementById('bundle-upsell-link');
+    bLink.textContent = `${bundleProduct.name} \u2192`;
+    bLink.href = bundleProduct.url + UTM + resultState;
+  } else {
+    bundleBlock.classList.remove('active');
+  }
+
+  showScreen('result');
+}
+
+function retakeQuiz() {
+  resetState();
+  // Clear all selections
+  document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+  showScreen('entry');
+}
+
+// ── Console Scoring Debug ──
+window.debugScoring = function() {
+  console.log('=== SBLA Quiz Scoring Debug ===');
+  console.log('Q1:', state.q1);
+  console.log('Q2:', state.q2);
+  console.log('Q3:', state.q3, '| Neck variant:', state.q3_neck_variant);
+  console.log('Q4:', state.q4);
+  console.log('Q5 (copy flag):', state.q5_copyFlag);
+  console.log('Q6:', state.q6);
+  console.log('Zone scores:', JSON.parse(JSON.stringify(state.scores)));
+  console.log('Hard bundle trigger:', state.hardBundleTrigger);
+  console.log('Bundle upsell flag:', state.bundleUpsellFlag);
+  console.log('Escalation flag:', state.escalationFlag);
+  console.log('Neck resolution:', state.neckResolution);
+  console.log('Winning zone:', getWinningZone());
+  const second = getSecondZone();
+  console.log('Second zone:', second);
+  if (second) console.log('Gap:', state.scores[getWinningZone()] - second.score);
+};
+</script>
+
+</body>
+</html>
