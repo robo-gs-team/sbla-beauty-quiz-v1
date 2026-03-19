@@ -1768,24 +1768,15 @@ function buildQ3() {
   if (isNeckRouted) {
     headline.textContent = 'When you focus on your neck and jaw area, what stands out most?';
     const opts = [
-      { val: 'standard', label: 'Loose, crepey, or sagging skin', imgDesc: 'Crepey neck texture' },
-      { val: 'xl', label: 'Under-chin fullness or loss of a defined jawline', imgDesc: 'Under-chin fullness' },
-      { val: 'both', label: 'Both \u2014 the full area has changed', imgDesc: 'Full neck + jaw area' }
+      { val: 'standard', text: 'Loose, crepey, or sagging skin' },
+      { val: 'xl',       text: 'Under-chin fullness or loss of a defined jawline' },
+      { val: 'both',     text: 'Both \u2014 the full area has changed' }
     ];
     opts.forEach(o => {
       const div = document.createElement('div');
       div.className = 'radio-option';
-      div.style.flexDirection = 'column';
-      div.style.alignItems = 'stretch';
       div.onclick = () => selectRadio(div, 'q3', o.val);
-      div.innerHTML = `
-        <div style="display:flex;align-items:flex-start;gap:12px">
-          <div class="option-radio"></div>
-          <div class="option-text">${o.label}</div>
-        </div>
-        <div class="neck-image-zone" data-image-zone="neck-${o.val}">
-          <span class="neck-image-placeholder">Image \u2014 ${o.imgDesc}</span>
-        </div>`;
+      div.innerHTML = `<div class="option-radio"></div><div class="option-text">${o.text}</div>`;
       container.appendChild(div);
     });
   } else {
