@@ -1367,28 +1367,7 @@ img { max-width: 100%; display: block; }
       <div class="q-sub">Picture yourself three weeks from now.</div>
     </div>
     <div class="q-body">
-      <div class="radio-list">
-        <div class="radio-option" onclick="selectRadio(this,'q6','eye')">
-          <div class="option-radio"></div>
-          <div class="option-text">Looking genuinely rested and refreshed — eyes that look open and awake</div>
-        </div>
-        <div class="radio-option" onclick="selectRadio(this,'q6','face')">
-          <div class="option-radio"></div>
-          <div class="option-text">Skin that feels firmer and looks smoother — more like it used to</div>
-        </div>
-        <div class="radio-option" onclick="selectRadio(this,'q6','neck')">
-          <div class="option-radio"></div>
-          <div class="option-text">A more lifted, sculpted neck and jaw — no procedures, no downtime</div>
-        </div>
-        <div class="radio-option" onclick="selectRadio(this,'q6','lip')">
-          <div class="option-radio"></div>
-          <div class="option-text">Lips that look naturally fuller and more defined</div>
-        </div>
-        <div class="radio-option" onclick="selectRadio(this,'q6','all')">
-          <div class="option-radio"></div>
-          <div class="option-text">An overall transformation — I want to feel like myself again, everywhere</div>
-        </div>
-      </div>
+      <div id="q6-options" class="radio-list"></div>
       <div class="back-btn"><button onclick="goBack()">← Back</button></div>
     </div>
   </div>
@@ -1797,6 +1776,36 @@ function buildQ3() {
   }
 }
 
+// ── Q6 — Outcome aspiration — filtered to selected zones ──
+function buildQ6() {
+  const container = document.getElementById('q6-options');
+  container.innerHTML = '';
+
+  const opts = [
+    { val: 'eye',  text: 'Looking genuinely rested and refreshed \u2014 eyes that look open and awake' },
+    { val: 'face', text: 'Skin that feels firmer and looks smoother \u2014 more like it used to' },
+    { val: 'neck', text: 'A more lifted, sculpted neck and jaw \u2014 no procedures, no downtime' },
+    { val: 'lip',  text: 'Lips that look naturally fuller and more defined' },
+    { val: 'all',  text: 'An overall transformation \u2014 I want to feel like myself again, everywhere' }
+  ];
+
+  // Only show zone options the user has expressed interest in (Q1 or Q2).
+  // 'none' and 'all' are handled specially: 'none' = no secondary zone (skip it);
+  // q1='all' = user wants everything, so show all options.
+  const activeZones = new Set([state.q1, state.q2].filter(z => z && z !== 'none'));
+  const filtered = state.q1 === 'all'
+    ? opts
+    : opts.filter(o => o.val === 'all' || activeZones.has(o.val));
+
+  filtered.forEach(o => {
+    const div = document.createElement('div');
+    div.className = 'radio-option';
+    div.onclick = () => selectRadio(div, 'q6', o.val);
+    div.innerHTML = `<div class="option-radio"></div><div class="option-text">${o.text}</div>`;
+    container.appendChild(div);
+  });
+}
+
 // ── Generic radio select + auto-advance ──
 function selectRadio(el, question, value) {
   // Visual
@@ -1858,8 +1867,7 @@ function selectRadio(el, question, value) {
 
     case 'q5':
       state.q5_copyFlag = value;
-      // Zero zone points — copy flag only. Go straight to Q6.
-      setTimeout(() => navigateTo('q6'), 300);
+      setTimeout(() => { buildQ6(); navigateTo('q6'); }, 300);
       break;
 
     case 'q6':
