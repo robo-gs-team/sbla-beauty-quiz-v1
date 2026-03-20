@@ -616,6 +616,7 @@ img { max-width: 100%; display: block; }
   font-size: 7px;
   color: #b0a8a6;
 }
+.ba-combined { position: relative; }
 .ba-combined img { width: 100%; display: block; }
 .ba-split {
   display: grid;
@@ -627,15 +628,19 @@ img { max-width: 100%; display: block; }
 .ba-slot img { width: 100%; display: block; }
 .ba-label {
   position: absolute;
-  bottom: 6px;
-  left: 8px;
+  bottom: 8px;
+  left: 10px;
   font-family: var(--font-ui);
-  font-size: 7px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.95);
   text-transform: uppercase;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+.ba-label--after {
+  left: auto;
+  right: 10px;
 }
 
 /* --- Bundle upsell --- */
@@ -2145,12 +2150,12 @@ function renderResult(resultState) {
 
   if (baData.type === 'combined') {
     baSection.style.display = '';
-    baContent.innerHTML = `<div class="ba-combined"><img src="${baData.src}" alt="Before and after results" loading="lazy"></div>`;
+    baContent.innerHTML = `<div class="ba-combined"><img src="${baData.src}" alt="Before and after results" loading="lazy"><span class="ba-label">Before</span><span class="ba-label ba-label--after">After</span></div>`;
   } else if (baData.type === 'split') {
     baSection.style.display = '';
     baContent.innerHTML = `<div class="ba-split">
       <div class="ba-slot"><img src="${baData.before}" alt="Before" loading="lazy"><span class="ba-label">Before</span></div>
-      <div class="ba-slot"><img src="${baData.after}"  alt="After"  loading="lazy"><span class="ba-label">After</span></div>
+      <div class="ba-slot"><img src="${baData.after}"  alt="After"  loading="lazy"><span class="ba-label ba-label--after">After</span></div>
     </div>`;
   } else {
     baSection.style.display = 'none';
