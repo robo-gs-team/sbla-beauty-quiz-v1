@@ -968,8 +968,11 @@ img { max-width: 100%; display: block; }
   /* Entry: hero image */
   .entry-hero { height: 22dvh; }
 
-  /* Entry CTA: width matches headline, not full page */
-  .entry-cta { width: auto; display: inline-block; padding-left: 40px; padding-right: 40px; }
+  /* Entry: sub text — lift the mobile 380px cap so it doesn't wrap early */
+  .entry-sub { max-width: 560px; }
+
+  /* Entry CTA: cap width to match headline, don't span full panel */
+  .entry-cta { max-width: 560px; padding-left: 40px; padding-right: 40px; }
 
   /* Question header: full-width purple band */
   .q-header { padding: 28px 48px 32px; }
