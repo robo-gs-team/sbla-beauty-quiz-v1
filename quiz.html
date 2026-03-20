@@ -968,6 +968,9 @@ img { max-width: 100%; display: block; }
   /* Entry: hero image */
   .entry-hero { height: 22dvh; }
 
+  /* Entry CTA: width matches headline, not full page */
+  .entry-cta { width: auto; display: inline-block; padding-left: 40px; padding-right: 40px; }
+
   /* Question header: full-width purple band */
   .q-header { padding: 28px 48px 32px; }
   .q-headline, .q-sub, .progress-row { max-width: 640px; }
@@ -1203,8 +1206,9 @@ img { max-width: 100%; display: block; }
       <div class="entry-meta">
         <span class="entry-meta-tag">6 questions</span>
         <span class="entry-meta-tag">2 minutes</span>
+        <span class="entry-meta-tag">Clinically proven</span>
       </div>
-      <button class="btn-primary" onclick="startQuiz()">Find My Zone →</button>
+      <button class="btn-primary entry-cta" onclick="startQuiz()">Take the Quiz →</button>
     </div>
   </div>
 
