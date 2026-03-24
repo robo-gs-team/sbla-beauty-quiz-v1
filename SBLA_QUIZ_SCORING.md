@@ -7,7 +7,7 @@
 
 ---
 
-## ★ CLIENT OVERVIEW (Simplified Summary)
+## ★ OVERVIEW (Simplified Summary)
 
 > _Read this section first. Everything below is the full technical detail._
 
